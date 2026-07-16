@@ -1,4 +1,4 @@
-#![cfg_attr(test, feature(test))]
+#![cfg_attr(all(test, feature = "nightly-benches"), feature(test))]
 
 mod blake2b;
 
@@ -103,14 +103,14 @@ fn checked_compress(
 /// out : bytes
 ///     A vector of 64 bytes representing the blake2b hash of the input data.
 #[pyfunction]
-fn compress(
-    py: Python,
+fn compress<'py>(
+    py: Python<'py>,
     rounds: usize,
     starting_state: Vec<u64>,
     block: Vec<u64>,
     offset_counters: Vec<u64>,
     final_block_flag: bool,
-) -> PyResult<PyObject> {
+) -> PyResult<Bound<'py, PyBytes>> {
     let result = checked_compress(
         rounds,
         &starting_state,
@@ -121,7 +121,7 @@ fn compress(
 
     match result {
         Err(msg) => Err(PyValueError::new_err(msg)),
-        Ok(ok) => Ok(PyBytes::new(py, &ok).into()),
+        Ok(ok) => Ok(PyBytes::new(py, &ok)),
     }
 }
 
@@ -146,12 +146,12 @@ fn _decode_and_compress(input: Vec<u8>) -> Result<[u8; 64], String> {
 /// out : bytes
 ///     A vector of 64 bytes representing the blake2b hash of the input data.
 #[pyfunction]
-fn decode_and_compress(py: Python, input: Vec<u8>) -> PyResult<PyObject> {
+fn decode_and_compress<'py>(py: Python<'py>, input: Vec<u8>) -> PyResult<Bound<'py, PyBytes>> {
     let result = _decode_and_compress(input);
 
     match result {
         Err(msg) => Err(PyValueError::new_err(msg)),
-        Ok(ok) => Ok(PyBytes::new(py, &ok).into()),
+        Ok(ok) => Ok(PyBytes::new(py, &ok)),
     }
 }
 

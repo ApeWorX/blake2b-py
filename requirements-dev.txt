@@ -1,6 +1,0 @@
-pytest
-pytest-benchmark
-hypothesis
-maturin
-bump-my-version
-twine

@@ -2,12 +2,79 @@
 requires = ["maturin>=1.0,<2"]
 build-backend = "maturin"
 
-[tool.bumpversion]
-current_version = "0.3.2"
-commit = true
-tag = true
+[project]
+name = "blake2b-py"
+dynamic = ["version"]
+description = "Blake2b hashing in Rust with Python bindings."
+readme = "README.md"
+requires-python = ">=3.10,<4"
+license = { text = "MIT" }
+authors = [
+    { name = "David Sanders", email = "davesque@gmail.com" },
+    { name = "ApeWorX Collective", email = "admin@apeworx.io" },
+]
+maintainers = [
+    { name = "ApeWorX Collective", email = "admin@apeworx.io" },
+]
+keywords = ["blake2b", "ethereum", "hashing", "rust"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Rust",
+]
 
-[[tool.bumpversion.files]]
-filename = "Cargo.toml"
-search = "name = \"blake2b-py\"\nversion = \"{current_version}\""
-replace = "name = \"blake2b-py\"\nversion = \"{new_version}\""
+[project.urls]
+Homepage = "https://github.com/ApeWorX/blake2b-py"
+Repository = "https://github.com/ApeWorX/blake2b-py"
+"Bug Tracker" = "https://github.com/ApeWorX/blake2b-py/issues"
+
+[dependency-groups]
+test = [
+    "hypothesis",
+    "maturin>=1.0,<2",
+    "pytest",
+    "pytest-benchmark",
+]
+lint = [
+    "ruff>=0.12.0",
+]
+build = [
+    "maturin>=1.0,<2",
+]
+dev = [
+    { include-group = "test" },
+    { include-group = "lint" },
+    { include-group = "build" },
+    "ipython",
+    "prek",
+]
+
+[tool.ruff]
+target-version = "py38"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "W",
+    "B",
+    "I",
+    "UP",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["blake2b"]
+
+[tool.ruff.format]
+quote-style = "double"
+line-ending = "auto"
+indent-style = "space"
+docstring-code-format = true
