@@ -1,0 +1,86 @@
+name: Release
+
+on:
+  release:
+    types: [released]
+
+env:
+  CARGO_TERM_COLOR: always
+  UV_CACHE_DIR: /tmp/uv-cache
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Setup Python
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Build Wheel
+        run: uv run --group build maturin build --release --strip --interpreter python
+
+      - name: Upload Wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.os }}-${{ matrix.python-version }}
+          path: target/wheels/*.whl
+          if-no-files-found: error
+
+  source-dist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Setup Python
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.10"
+
+      - name: Build Source Distribution
+        run: uv run --group build maturin sdist
+
+      - name: Upload Source Distribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-dist
+          path: target/wheels/*.tar.gz
+          if-no-files-found: error
+
+  publish:
+    needs:
+      - build
+      - source-dist
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/blake2b-py
+    permissions:
+      id-token: write
+    steps:
+      - name: Download Packages
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          pattern: "*"
+          merge-multiple: true
+
+      - name: Publish Package
+        uses: pypa/gh-action-pypi-publish@release/v1

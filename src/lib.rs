@@ -1,4 +1,4 @@
-#![cfg_attr(test, feature(test))]
+#![cfg_attr(all(test, feature = "nightly-benches"), feature(test))]
 
 mod blake2b;
 

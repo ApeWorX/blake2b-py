@@ -4,7 +4,7 @@ version = "0.3.2"
 authors = ["David Sanders <davesque@gmail.com>"]
 edition = "2018"
 license = "MIT"
-repository = "https://github.com/ethereum/blake2b-py"
+repository = "https://github.com/ApeWorX/blake2b-py"
 description = "Blake2b hashing in Rust with Python bindings."
 
 [dependencies]
@@ -12,6 +12,9 @@ pyo3 = { version = "~0.23", features = ["extension-module"] }
 
 [dev-dependencies]
 hex = "~0.4"
+
+[features]
+nightly-benches = []
 
 [lib]
 name = "blake2b"

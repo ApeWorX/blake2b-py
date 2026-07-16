@@ -119,7 +119,7 @@ def get_64_bit_little_endian_words(compact_bytes: bytes) -> Iterable[int]:
 
 
 class Blake2:
-    """ Blake2 is a base class for Blake2b and Blake2s """
+    """Blake2 is a base class for Blake2b and Blake2s"""
 
     # for more than 10 rounds, the schedule wraps around to the beginning
     sigma_schedule = (
@@ -137,16 +137,19 @@ class Blake2:
 
 
 class Blake2b(Blake2):
-
     WORDBITS = 64
-    MASKBITS = 2 ** WORDBITS - 1
-    WORDFMT = 'Q'
+    MASKBITS = 2**WORDBITS - 1
+    WORDFMT = "Q"
 
     IV = (
-        0x6a09e667f3bcc908, 0xbb67ae8584caa73b,
-        0x3c6ef372fe94f82b, 0xa54ff53a5f1d36f1,
-        0x510e527fade682d1, 0x9b05688c2b3e6c1f,
-        0x1f83d9abfb41bd6b, 0x5be0cd19137e2179
+        0x6A09E667F3BCC908,
+        0xBB67AE8584CAA73B,
+        0x3C6EF372FE94F82B,
+        0xA54FF53A5F1D36F1,
+        0x510E527FADE682D1,
+        0x9B05688C2B3E6C1F,
+        0x1F83D9ABFB41BD6B,
+        0x5BE0CD19137E2179,
     )
 
     ROT1 = 32
@@ -156,11 +159,12 @@ class Blake2b(Blake2):
 
 
 def blake2b_compress(
-        num_rounds: int,
-        h_starting_state: TMessageBlock,
-        block: bytes,
-        t_offset_counters: Tuple[int, int],
-        final_block_flag: bool) -> bytes:
+    num_rounds: int,
+    h_starting_state: TMessageBlock,
+    block: bytes,
+    t_offset_counters: Tuple[int, int],
+    final_block_flag: bool,
+) -> bytes:
     """
     'F Compression' from section 3.2 of RFC 7693:
     https://tools.ietf.org/html/rfc7693#section-3.2
@@ -185,10 +189,10 @@ def blake2b_compress(
     sigma_schedule_len = len(sigma_schedule)
 
     # convert block (bytes) into 16 LE words
-    m = struct.unpack_from('<16%s' % Blake2b.WORDFMT, bytes(block))
+    m = struct.unpack_from(f"<16{Blake2b.WORDFMT}", bytes(block))
 
     v = [0] * 16
-    v[0: 8] = h_starting_state
+    v[0:8] = h_starting_state
     v[8:12] = IV[:4]
     v[12] = t_offset_counters[0] ^ IV[4]
     v[13] = t_offset_counters[1] ^ IV[5]
@@ -263,8 +267,5 @@ def blake2b_compress(
         msri21 = m[sr[15]]
         G(3, 4, 9, 14)
 
-    result_message_words = (
-        h_starting_state[i] ^ v[i] ^ v[i + 8]
-        for i in range(8)
-    )
-    return struct.pack('<8%s' % Blake2b.WORDFMT, *result_message_words)
+    result_message_words = (h_starting_state[i] ^ v[i] ^ v[i + 8] for i in range(8))
+    return struct.pack(f"<8{Blake2b.WORDFMT}", *result_message_words)

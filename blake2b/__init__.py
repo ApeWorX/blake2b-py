@@ -1,6 +1,7 @@
 """
 Functions for calculating blake2b hashes.
 """
+
 from .blake2b import (  # noqa: F401
     compress,
     decode_and_compress,
@@ -8,10 +9,10 @@ from .blake2b import (  # noqa: F401
 )
 
 __all__ = [
-    'compress',
-    'decode_and_compress',
-    'decode_parameters',
-    'test',
+    "compress",
+    "decode_and_compress",
+    "decode_parameters",
+    "test",
 ]
 
 
@@ -23,7 +24,7 @@ def test():
     import logging
 
     logging.basicConfig(level=logging.INFO)
-    logger = logging.getLogger(__name__ + '.test')
+    logger = logging.getLogger(__name__ + ".test")
 
     FAST_EXAMPLES = (
         (
@@ -60,22 +61,19 @@ def test():
         ),
     )
 
-    logger.info('Checking basic test vectors from EIP 152...')
-    for (inp, expected) in FAST_EXAMPLES:
+    logger.info("Checking basic test vectors from EIP 152...")
+    for inp, expected in FAST_EXAMPLES:
         input_bytes = binascii.unhexlify(inp)
         actual = binascii.hexlify(
             decode_and_compress(input_bytes),
-        ).decode('utf8')
+        ).decode("utf8")
 
         assert actual == expected, (
-            f'actual ({actual[:20]}...) != expected ({expected[:20]}...)'
+            f"actual ({actual[:20]}...) != expected ({expected[:20]}...)"
         )
-    logger.info('...OK')
+    logger.info("...OK")
 
-    logger.info(
-        'Checking errors properly raised for '
-        'bad tightly packed input...'
-    )
+    logger.info("Checking errors properly raised for bad tightly packed input...")
     for inp in ERROR_EXAMPLES:
         input_bytes = binascii.unhexlify(inp)
         try:
@@ -83,17 +81,17 @@ def test():
         except ValueError:
             pass
         else:
-            assert False, f'error not raised for "{inp[:20]}..."'
-    logger.info('...OK')
+            raise AssertionError(f'error not raised for "{inp[:20]}..."')
+    logger.info("...OK")
 
-    logger.info('Checking longer running hashing operations...')
-    for (inp, expected) in SLOW_EXAMPLES:
+    logger.info("Checking longer running hashing operations...")
+    for inp, expected in SLOW_EXAMPLES:
         input_bytes = binascii.unhexlify(inp)
         actual = binascii.hexlify(
             decode_and_compress(input_bytes),
-        ).decode('utf8')
+        ).decode("utf8")
 
         assert actual == expected, (
-            f'actual ({actual[:20]}...) != expected ({expected[:20]}...)'
+            f"actual ({actual[:20]}...) != expected ({expected[:20]}...)"
         )
-    logger.info('...OK')
+    logger.info("...OK")

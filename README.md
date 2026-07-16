@@ -2,43 +2,48 @@
 
 Blake2b hashing in Rust with Python bindings.
 
-## Building/releasing
+## Developing
 
-To build and publish a release, follow these steps:
-
-### Bump the version
-
-First, bump the package version with the included make target:
+Install dependencies and build the Python extension in a virtual environment:
 
 ```bash
-make bump-my-version bump=patch
+UV_CACHE_DIR=/tmp/uv-cache uv run --group test maturin develop
 ```
 
-The above invocation bumps the "patch" version of a semantic version number
-("x" in "1.2.x").  Other valid version types are "major" and "minor".  The
-version is bumped by modifying source files that contain the version number,
-creating a new commit that includes those modifications, then tagging that
-commit with the new version.  The new commit and tag are then pushed to the
-upstream repository.
-
-### Building & Releasing
-
-Packages are build and distributed via Github Actions as soon as a tag is
-pushed to the remote repository which is taken care of by the bump-my-version command.
-
-### Developing
-
-You'll need to have [Maturin](https://pyo3.rs/v0.16.4/) installed on your machine.
-Create a virtual environment, and then you can do:
+Run the test suites:
 
 ```bash
-pip install maturin
-maturin develop
+UV_CACHE_DIR=/tmp/uv-cache uv run --group test pytest
+PYO3_PYTHON=.venv/bin/python cargo test test_
 ```
 
-to install the dependencies. You may need to specify the
-`MACOSX_DEPLOYMENT_TARGET` environment variable to your version of MacOS.
+The slow EIP-152 vector can be run explicitly:
 
-#### Run the tests
+```bash
+PYO3_PYTHON=.venv/bin/python cargo test --release test_f_eip_152_vec_8 -- --ignored --nocapture
+```
 
-Running `make test_all` will run all the tests.
+Rust benchmarks use unstable Rust benchmark support and require nightly:
+
+```bash
+PYO3_PYTHON=.venv/bin/python cargo +nightly bench --features nightly-benches
+```
+
+You may need to specify the `MACOSX_DEPLOYMENT_TARGET` environment variable to
+your version of macOS.
+
+## Building and Releasing
+
+Build local artifacts with maturin:
+
+```bash
+UV_CACHE_DIR=/tmp/uv-cache uv run --group build maturin build --release
+```
+
+The package version is currently sourced from `Cargo.toml`. To release, update
+that version, create a GitHub release for the corresponding tag, and let GitHub
+Actions build and publish packages to PyPI through trusted publishing.
+
+PyPI must be configured to trust the `ApeWorX/blake2b-py` GitHub repository and
+the `.github/workflows/publish.yaml` workflow before the release job can
+publish.
