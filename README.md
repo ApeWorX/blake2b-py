@@ -40,9 +40,11 @@ Build local artifacts with maturin:
 UV_CACHE_DIR=/tmp/uv-cache uv run --group build maturin build --release
 ```
 
-The package version is currently sourced from `Cargo.toml`. To release, update
-that version, create a GitHub release for the corresponding tag, and let GitHub
-Actions build and publish packages to PyPI through trusted publishing.
+The committed package version in `Cargo.toml` is intentionally the invalid
+release sentinel `0.0.0`. Create a GitHub release with a semantic-version tag
+such as `v0.5.0`; the publish workflow validates the tag and replaces the
+sentinel before Maturin builds the wheels and source distribution. A local
+build retains the sentinel version and must not be published.
 
 PyPI must be configured to trust the `ApeWorX/blake2b-py` GitHub repository and
 the `.github/workflows/publish.yaml` workflow before the release job can
