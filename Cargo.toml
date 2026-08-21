@@ -1,7 +1,10 @@
 [package]
 name = "blake2b-py"
-version = "0.3.2"
-authors = ["David Sanders <davesque@gmail.com>"]
+version = "0.0.0"  # Replaced from the GitHub release tag in publish CI.
+authors = [
+    "David Sanders <davesque@gmail.com>",
+    "ApeWorX <admin@apeworx.io>",
+]
 edition = "2018"
 license = "MIT"
 repository = "https://github.com/ApeWorX/blake2b-py"

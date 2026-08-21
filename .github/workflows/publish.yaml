@@ -7,6 +7,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   UV_CACHE_DIR: /tmp/uv-cache
+  RELEASE_TAG: ${{ github.event.release.tag_name }}
 
 jobs:
   build:
@@ -28,6 +29,18 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}
+
+      - name: Set Package Version From Release Tag
+        shell: bash
+        run: |
+          version="${RELEASE_TAG#v}"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z]+)*$ ]]; then
+            echo "Invalid release version: $RELEASE_TAG" >&2
+            exit 1
+          fi
+          sed -i.bak -E "s/^version = \"0\.0\.0\".*/version = \"$version\"/" Cargo.toml
+          rm Cargo.toml.bak
+          grep -q "^version = \"$version\"$" Cargo.toml
 
       - name: Build Wheel
         run: uv run --group build maturin build --release --strip --interpreter python
@@ -53,6 +66,18 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           python-version: "3.10"
+
+      - name: Set Package Version From Release Tag
+        shell: bash
+        run: |
+          version="${RELEASE_TAG#v}"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z]+)*$ ]]; then
+            echo "Invalid release version: $RELEASE_TAG" >&2
+            exit 1
+          fi
+          sed -i.bak -E "s/^version = \"0\.0\.0\".*/version = \"$version\"/" Cargo.toml
+          rm Cargo.toml.bak
+          grep -q "^version = \"$version\"$" Cargo.toml
 
       - name: Build Source Distribution
         run: uv run --group build maturin sdist
