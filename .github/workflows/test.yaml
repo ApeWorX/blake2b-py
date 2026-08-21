@@ -43,6 +43,7 @@ jobs:
       - name: Setup Python
         uses: astral-sh/setup-uv@v7
         with:
+          cache: false
           python-version: "3.14"
 
       - name: Run Rust Tests
@@ -88,6 +89,7 @@ jobs:
       - name: Setup Python
         uses: astral-sh/setup-uv@v7
         with:
+          cache: false
           python-version: "3.14"
 
       - name: Run Slow EIP-152 Vector
@@ -108,6 +110,7 @@ jobs:
       - name: Setup Python
         uses: astral-sh/setup-uv@v7
         with:
+          cache: false
           python-version: "3.14"
 
       - name: Run Rust Benchmarks
